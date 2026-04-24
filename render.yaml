@@ -2,14 +2,10 @@ services:
   - type: web
     name: dearsunshine
     runtime: docker
-    plan: starter
+    plan: free
     region: oregon
     dockerfilePath: ./Dockerfile
     healthCheckPath: /healthz
-    disk:
-      name: data
-      mountPath: /data
-      sizeGB: 1
     envVars:
       - key: DATA_DIR
         value: /data

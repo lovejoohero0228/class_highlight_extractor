@@ -12,7 +12,7 @@ This app is a FastAPI server with a static frontend and is ready to deploy to Re
 Repository already includes [`render.yaml`](./render.yaml) with:
 
 - Docker runtime (`Dockerfile`)
-- persistent disk mounted at `/data`
+- `free` plan
 - `DATA_DIR=/data`
 - health check path `/healthz`
 
@@ -29,7 +29,7 @@ Deploy steps:
 
 - Always access with `https://` URL (Render default domain is HTTPS).
 - Large video upload depends on network quality; use stable Wi-Fi for better reliability.
-- App data (uploads/transcripts/clips) persists on the Render disk mounted at `/data`.
+- On free plan, app data is ephemeral and may reset after redeploy/restart.
 
 ## Fly.io (optional)
 

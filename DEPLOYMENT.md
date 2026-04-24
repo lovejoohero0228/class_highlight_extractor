@@ -1,29 +1,36 @@
 # Deployment
 
-This app is a FastAPI server with a static frontend. The easiest path to make it reachable on iPhone anywhere is to run it as a container on a PaaS such as Render or Fly.io.
+This app is a FastAPI server with a static frontend and is ready to deploy to Render.
 
 ## Required environment variables
 
-- `OPENAI_API_KEY`: required for transcription and highlight analysis
-- `DATA_DIR`: directory for uploads, transcripts, jobs, and clips
+- `OPENAI_API_KEY`: required for transcription/highlight analysis
+- `DATA_DIR`: set to `/data` on Render (already declared in `render.yaml`)
 
-## Notes
+## Render (recommended)
 
-- The app needs `ffmpeg` installed in the runtime image.
-- `DATA_DIR` should point to persistent storage, not ephemeral disk, if you want uploads and results to survive restarts.
-- The `/api/jobs` endpoint drives the frontend polling, so the public URL must allow normal browser access over HTTPS.
+Repository already includes [`render.yaml`](./render.yaml) with:
 
-## Render
+- Docker runtime (`Dockerfile`)
+- persistent disk mounted at `/data`
+- `DATA_DIR=/data`
+- health check path `/healthz`
 
-1. Create a new Web Service from the repository.
-2. Let Render use [`render.yaml`](./render.yaml) as the Blueprint.
-3. Add the `OPENAI_API_KEY` value when prompted.
-4. Deploy and open the generated HTTPS URL on iPhone Safari.
+Deploy steps:
 
-## Fly.io
+1. Render dashboard -> `New` -> `Blueprint`.
+2. Connect `lovejoohero0228/class_highlight_extractor`.
+3. Confirm the service from `render.yaml` and create it.
+4. In service settings, set `OPENAI_API_KEY`.
+5. Deploy and wait until health check `/healthz` is passing.
+6. Open the generated `https://...onrender.com` URL in iPhone Safari.
 
-1. Create an app from the repository.
-2. Use [`fly.toml`](./fly.toml) as the app config.
-3. Create the volume named `dearsunshine_data` with `fly volumes create dearsunshine_data`.
-4. Add `OPENAI_API_KEY` as a secret.
-5. Deploy and use the generated HTTPS URL on iPhone Safari.
+## iPhone Safari notes
+
+- Always access with `https://` URL (Render default domain is HTTPS).
+- Large video upload depends on network quality; use stable Wi-Fi for better reliability.
+- App data (uploads/transcripts/clips) persists on the Render disk mounted at `/data`.
+
+## Fly.io (optional)
+
+`fly.toml` is included if you want Fly deployment instead.

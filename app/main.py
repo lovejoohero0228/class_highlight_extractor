@@ -51,6 +51,11 @@ def index() -> FileResponse:
     return FileResponse("app/static/index.html")
 
 
+@app.get("/healthz")
+def healthz() -> dict[str, str]:
+    return {"status": "ok"}
+
+
 @app.post("/api/videos")
 async def upload_video(
     background_tasks: BackgroundTasks,

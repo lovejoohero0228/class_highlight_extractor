@@ -5,6 +5,7 @@ services:
     plan: starter
     region: oregon
     dockerfilePath: ./Dockerfile
+    healthCheckPath: /healthz
     disk:
       name: data
       mountPath: /data

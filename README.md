@@ -43,6 +43,15 @@ Open:
 - Local machine: `http://localhost:8000`
 - Phone on same Wi-Fi: `http://<PC_LOCAL_IP>:8000`
 
+## Render Deploy
+
+This repository includes [`render.yaml`](./render.yaml) and [`Dockerfile`](./Dockerfile).
+
+1. Push latest code to GitHub.
+2. In Render, create a `Blueprint` from this repository.
+3. Set `OPENAI_API_KEY` in Render environment variables.
+4. Deploy, then open the Render HTTPS URL in iPhone Safari.
+
 ## Data Layout
 
 Generated data is stored under `./data`:

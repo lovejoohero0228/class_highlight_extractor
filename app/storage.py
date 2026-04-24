@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import json
 import re
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from uuid import uuid4
 
 import aiofiles
 from fastapi import UploadFile
+from pydantic import ValidationError
 
 from app.config import settings
 from app.models import CandidateReview, Clip, ExtractionOptions, Job, JobStatus, TranscriptSegment, VideoMetadata
@@ -28,7 +30,16 @@ def _now_iso() -> str:
 
 def save_json(path: Path, payload: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    serialized = json.dumps(payload, ensure_ascii=False, indent=2)
+    with tempfile.NamedTemporaryFile(
+        mode="w",
+        encoding="utf-8",
+        dir=str(path.parent),
+        delete=False,
+    ) as temp_file:
+        temp_file.write(serialized)
+        temp_path = Path(temp_file.name)
+    temp_path.replace(path)
 
 
 def load_json(path: Path) -> object:
@@ -221,13 +232,19 @@ def get_job(job_id: str) -> Job | None:
     path = _job_path(job_id)
     if not path.exists():
         return None
-    return hydrate_job(Job.model_validate(load_json(path)))
+    try:
+        return hydrate_job(Job.model_validate(load_json(path)))
+    except (OSError, json.JSONDecodeError, ValidationError):
+        return None
 
 
 def list_jobs() -> list[Job]:
     jobs: list[Job] = []
     for path in sorted(settings.jobs_dir.glob("*.json"), key=lambda item: item.stat().st_mtime, reverse=True):
-        jobs.append(hydrate_job(Job.model_validate(load_json(path))))
+        try:
+            jobs.append(hydrate_job(Job.model_validate(load_json(path))))
+        except (OSError, json.JSONDecodeError, ValidationError):
+            continue
     return jobs
 
 

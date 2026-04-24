@@ -21,6 +21,7 @@ body {
   margin: 0;
   font-family: "Segoe UI", "Noto Sans KR", sans-serif;
   color: var(--ink);
+  overflow-x: hidden;
   background:
     radial-gradient(circle at top left, rgba(255, 226, 185, 0.9), transparent 30%),
     linear-gradient(180deg, #fff7ee 0%, var(--bg) 50%, #f0e5d6 100%);
@@ -29,7 +30,7 @@ body {
 .page {
   width: min(100%, 1120px);
   margin: 0 auto;
-  padding: 24px 16px 48px;
+  padding: calc(24px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right)) calc(48px + env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left));
 }
 
 .hero {
@@ -138,6 +139,7 @@ h1 {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .file-input {
@@ -318,6 +320,10 @@ button,
   color: var(--primary-strong);
   font-size: 0.9rem;
   font-weight: 700;
+  max-width: 100%;
+  white-space: normal;
+  line-height: 1.25;
+  text-align: center;
 }
 
 .request-meta {
@@ -330,11 +336,24 @@ button,
   border-radius: 20px;
   padding: 16px;
   background: var(--surface-strong);
+  min-width: 0;
 }
 
 .clip-card {
   display: grid;
   gap: 12px;
+}
+
+.job-name,
+.job-message,
+.job-error,
+.merge-help,
+.merge-status,
+.clip-range,
+.request-meta,
+.request-label {
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .video-clips {
@@ -387,7 +406,7 @@ button,
 }
 
 .clips-grid {
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
 }
 
 video {
@@ -491,6 +510,44 @@ video {
 }
 
 @media (max-width: 640px) {
+  .page {
+    padding-top: calc(16px + env(safe-area-inset-top));
+    padding-bottom: calc(36px + env(safe-area-inset-bottom));
+  }
+
+  .hero {
+    padding: 10px 2px 12px;
+  }
+
+  h1 {
+    font-size: clamp(1.35rem, 8vw, 1.85rem);
+    line-height: 1.15;
+    word-break: keep-all;
+  }
+
+  .panel,
+  .request-group,
+  .file-group,
+  .job-card,
+  .clip-card {
+    padding: 12px;
+    border-radius: 16px;
+  }
+
+  .request-item-summary {
+    padding: 10px 12px;
+  }
+
+  .request-item-summary,
+  .request-item-title {
+    align-items: flex-start;
+  }
+
+  .request-item-title strong {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
   .upload-controls,
   .clip-actions,
   .section-heading,
@@ -502,10 +559,23 @@ video {
     align-items: stretch;
   }
 
+  .file-group-header {
+    align-items: flex-start;
+  }
+
   button,
   .secondary-button,
   .file-input {
     width: 100%;
     justify-content: center;
+  }
+
+  .clips-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tab-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
   }
 }

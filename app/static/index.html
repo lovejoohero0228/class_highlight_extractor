@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DearSunshine</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <p class="eyebrow">DearSunshine</p>
+      <h1>수업 하이라이트 영상 추출기</h1>
+      <p class="subtitle">영상을 업로드하면 대본 분석과 후보 선정을 거쳐 클립을 생성합니다.</p>
+    </section>
+
+    <section class="panel upload-panel">
+      <div>
+        <h2>영상 업로드</h2>
+        <p class="muted">세부 요청이 있으면 프롬프트에 입력해 주세요. 입력 내용은 후보 선정 LLM 프롬프트에 반영됩니다.</p>
+      </div>
+
+      <label class="field">
+        <span>추가 요청 프롬프트</span>
+        <textarea id="customPrompt" rows="3" placeholder="예: 아이들이 또렷하게 발화하는 장면을 우선 선택하고, 소음이 큰 구간은 제외"></textarea>
+      </label>
+
+      <label class="field">
+        <span>클립 앞뒤 패딩</span>
+        <select id="clipShape">
+          <option value="fit">패딩 없음 (FIT)</option>
+          <option value="buffer_3s">앞뒤 3초 패딩</option>
+          <option value="buffer_5s">앞뒤 5초 패딩</option>
+        </select>
+      </label>
+
+      <div class="upload-controls">
+        <label class="file-input">
+          <input id="fileInput" type="file" accept="video/mp4,video/*" multiple>
+          <span>영상 선택</span>
+        </label>
+        <button id="uploadButton" class="primary-button" type="button">업로드</button>
+      </div>
+      <p id="uploadStatus" class="status-line" aria-live="polite"></p>
+    </section>
+
+    <section class="panel">
+      <div class="top-tabs">
+        <button class="top-tab active" type="button" data-top-tab="current">현재 요청</button>
+        <button class="top-tab" type="button" data-top-tab="archived">Archived</button>
+      </div>
+
+      <section class="top-panel active" data-top-panel="current">
+        <div class="section-heading">
+          <h2>현재 요청</h2>
+          <span class="pill">최근 생성된 요청 결과</span>
+        </div>
+        <div id="currentGroups" class="group-stack"></div>
+      </section>
+
+      <section class="top-panel" data-top-panel="archived">
+        <div class="section-heading">
+          <h2>Archived</h2>
+          <span class="pill">이전 결과 보관함</span>
+        </div>
+        <div id="archivedGroups" class="group-stack"></div>
+      </section>
+    </section>
+  </main>
+
+  <template id="requestGroupTemplate">
+    <article class="request-group">
+      <div class="request-header">
+        <div>
+          <p class="request-label"></p>
+          <h3 class="request-title"></h3>
+        </div>
+        <span class="request-badge"></span>
+      </div>
+      <div class="request-meta"></div>
+      <div class="video-stack"></div>
+    </article>
+  </template>
+
+  <template id="jobTemplate">
+    <article class="job-card">
+      <div class="job-header">
+        <strong class="job-name"></strong>
+        <span class="job-status"></span>
+      </div>
+      <div class="progress">
+        <div class="progress-bar"></div>
+      </div>
+      <p class="job-message"></p>
+      <p class="job-error error-text"></p>
+      <div class="video-clips"></div>
+      <div class="merge-controls">
+        <p class="merge-help">여러 클립을 선택한 뒤 병합 버튼으로 하나의 영상으로 받을 수 있습니다.</p>
+        <div class="merge-actions">
+          <button class="secondary-button merge-button" type="button">영상 병합</button>
+          <span class="merge-status"></span>
+        </div>
+      </div>
+    </article>
+  </template>
+
+  <template id="clipTemplate">
+    <article class="clip-card">
+      <div class="clip-meta">
+        <span class="activity-badge"></span>
+        <span class="confidence-text"></span>
+      </div>
+      <video controls playsinline preload="metadata"></video>
+      <p class="clip-range"></p>
+      <label class="merge-check">
+        <input class="merge-checkbox" type="checkbox">
+        <span>병합에 포함</span>
+      </label>
+      <div class="tab-buttons">
+        <button class="tab-button active" type="button" data-tab="transcript">대본</button>
+        <button class="tab-button" type="button" data-tab="explain">설명</button>
+      </div>
+      <div class="tab-panels">
+        <section class="tab-panel active" data-panel="transcript">
+          <pre class="transcript-text"></pre>
+        </section>
+        <section class="tab-panel" data-panel="explain">
+          <p class="explain-text"></p>
+        </section>
+      </div>
+      <div class="clip-actions">
+        <a class="secondary-button download-link" download>개별 다운로드</a>
+        <button class="danger-button delete-button" type="button">삭제</button>
+      </div>
+    </article>
+  </template>
+
+  <script src="/static/app.js" defer></script>
+</body>
+</html>
